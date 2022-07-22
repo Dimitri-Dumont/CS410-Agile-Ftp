@@ -13,7 +13,7 @@ class TestStringMethods(unittest.TestCase):
         pw = 'RubberDuck'
         ftp = app.connect(host,user,pw)                                    
         sys.stdout = sys.__stdout__                     # Capture stdout
-        self.assertEqual(capturedOutput.getvalue(),'Connect to ' + host +'\n')   # Assert console output is expected value.
+        self.assertEqual(capturedOutput.getvalue(),'Connected to ' + host +'\n')   # Assert console output is expected value.
     
 
 if __name__ == '__main__':

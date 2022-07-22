@@ -25,11 +25,14 @@ def options(user_input, sftp):
 
 def connect(host, user,pw):
     try:
-        FTP(host, user , pw) 
+        ftp = FTP() 
+        ftp.connect(host, 21)
+        ftp.login(user, pw)
     except:
         print('Connection failed')
     else:
-        print('Connect to ' + host)
+        print('Connected to ' + host)
+        return ftp
 
 def disconnect(sftp):
     try:
@@ -48,8 +51,9 @@ def listDirLocal(): # Only listing directories at the moment not files
             if not entry.name.startswith('.'):
                 print(entry.name)
 def main():
-    # public ip once server is running remotley:
-    # host = '67.160.144.238'
+    # public ip once server is running remotley: 
+        #host = '67.160.144.238'
+
     print("Defaulting to local server for testing")
     host = 'localhost'
     user = 'Test'
