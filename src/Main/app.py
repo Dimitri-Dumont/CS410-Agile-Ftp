@@ -1,17 +1,5 @@
-# from ftplib import FTP
-import pysftp 
-import os  #used to list local directory/files
-
-def connect(host, port, user,pw):
-    #ignore known_hosts check, we can remove these two lines later
-    cnOpts= pysftp.CnOpts()
-    cnOpts.hostkeys = None
-    with pysftp.Connection(host,port,user,pw,cnOpts) as sftp:
-        if(sftp):
-            print('Connected to SFTP server.')
-        else:
-            print('Connection not successful')
-    return sftp
+from ftplib import FTP
+import os  
 
 def menu():
     print("1. Disconnect from SFTP server")
@@ -24,50 +12,51 @@ def menu():
 
     user_input = input("Enter number of what you would like to do:\n")
     return user_input
-#I'm not sure how to disconnect without connecting first and storing that in a variable as sftp so we can close it.
-#I also dont know if a connection is persistant 
-def disconnect(sftp):
-    #ignore known_hosts check, we can remove these two lines later
-    cnOpts= pysftp.CnOpts()
-    cnOpts.hostkeys = None
-    if sftp:
-        sftp.close()
-        print('Disconnected to SFTP server.')
-    else:
-        print('Connection not successful')
 
-#user inputs number then selects from the different options listed in the menu
 def options(user_input, sftp):
-    if user_input == 1:
-       disconnect(sftp) 
-    elif user_input == 2:
-       listDir(sftp) 
-    elif user_input == 3:
-       path = input("Enter path: ")
-       listDirLocal(path) 
+     match user_input:
+        case '1':
+            disconnect(sftp)
+        case '2':
+            listDir(sftp)
+        case '3':
+            listDirLocal()
+        
 
+def connect(host, user,pw):
+    try:
+        FTP(host, user , pw) 
+    except:
+        print('Connection failed')
+    else:
+        print('Connect to ' + host)
 
-#this just lists the files in current directory, not all directories
+def disconnect(sftp):
+    try:
+        sftp.close()
+    except: 
+        print("Error occured closing connection")
+    else:
+        print("Disconnected")
+
 def listDir(sftp):
-    files = sftp.listdir_attr(".")
-    for f in files:
-        print(f)
-#list local files/directories 
-def listDirLocal(path):
-    with os.scandir(path) as it:
+    sftp.dir()
+
+def listDirLocal(): # Only listing directories at the moment not files
+    with os.scandir('C:\\') as it:
         for entry in it:
             if not entry.name.startswith('.'):
                 print(entry.name)
 def main():
-    #connect immediately then catch the sftp object to interact with the other functions
-    # print("Lets start by obtaining some information, please enter: ")
-    # host = input("Enter your host address: ")
-    # user = input("Enter your username: ")
-    # port = input("Enter the port: ") #usually port 22, not sure we need to specify this
-    # pw = input("Enter your password: ")
-    # sftp = connect(host,user,port,pw)
-    sftp = 2 
-    user_input = menu() #Find out what user wants to do
-    options(user_input,sftp) #Select what they want 
+    # public ip once server is running remotley:
+    # host = '67.160.144.238'
+    print("Defaulting to local server for testing")
+    host = 'localhost'
+    user = 'Test'
+    pw = 'RubberDuck'
+    ftp = connect(host,user,pw)
+    user_input = menu() 
+    options(user_input,ftp) 
+    
 if __name__ == "__main__":
     main()
