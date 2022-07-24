@@ -1,16 +1,19 @@
 import unittest
-from app import main
+import app
 import io
 import sys
 
 class TestStringMethods(unittest.TestCase):
 
-    def test_main(self):
+    def test_connection(self):
         capturedOutput = io.StringIO()                  # Create StringIO object
         sys.stdout = capturedOutput                     #  and redirect stdout.
-        main()                                     # Call function.
-        sys.stdout = sys.__stdout__                     # Reset redirect.
-        self.assertEqual(capturedOutput.getvalue(),"Hola\n")   # Assert console output is expected value.
+        host = 'localhost'
+        user = 'Test'
+        pw = 'RubberDuck'
+        ftp = app.connect(host,user,pw)                                    
+        sys.stdout = sys.__stdout__                     # Capture stdout
+        self.assertEqual(capturedOutput.getvalue(),'Connected to ' + host +'\n')   # Assert console output is expected value.
     
 
 if __name__ == '__main__':
