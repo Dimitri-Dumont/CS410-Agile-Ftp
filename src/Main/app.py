@@ -1,5 +1,5 @@
 from ftplib import FTP
-import os  
+import os
 
 def menu():
     print("1. Disconnect from SFTP server")
@@ -21,11 +21,13 @@ def options(user_input, sftp):
             listDir(sftp)
         case '3':
             listDirLocal()
-        
+        case '4':
+            getFile(sftp)
+
 
 def connect(host, user,pw):
     try:
-        ftp = FTP() 
+        ftp = FTP()
         ftp.connect(host, 21)
         ftp.login(user, pw)
     except:
@@ -37,7 +39,7 @@ def connect(host, user,pw):
 def disconnect(sftp):
     try:
         sftp.close()
-    except: 
+    except:
         print("Error occured closing connection")
     else:
         print("Disconnected")
@@ -50,8 +52,16 @@ def listDirLocal(): # Only listing directories at the moment not files
         for entry in it:
             if not entry.name.startswith('.'):
                 print(entry.name)
+
+def getFile(sftp):
+    FILENAME = 'syllabus.pdf'
+    # sftp.cwd('/')
+
+    with open(FILENAME, 'wb') as f:
+        sftp.retrbinary('RETR' + FILENAME, f.write)
+
 def main():
-    # public ip once server is running remotley: 
+    # public ip once server is running remotley:
         #host = '67.160.144.238'
 
     print("Defaulting to local server for testing")
@@ -59,8 +69,8 @@ def main():
     user = 'Test'
     pw = 'RubberDuck'
     ftp = connect(host,user,pw)
-    user_input = menu() 
-    options(user_input,ftp) 
-    
+    user_input = menu()
+    options(user_input,ftp)
+
 if __name__ == "__main__":
     main()
