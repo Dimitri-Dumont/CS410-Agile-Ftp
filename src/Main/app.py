@@ -54,25 +54,16 @@ def listDirLocal(): # Only listing directories at the moment not files
                 print(entry.name)
 
 def getFile(sftp):
-    # FILENAME = '/Users/xreed/Desktop/FTP/syllabus.pdf'
     FILENAME = "SampleText.txt"
-    # sftp.cwd("/Users/xreed/Desktop/FTP/")
     sftp.cwd("My Documents")
-    print(sftp.pwd())
-    print(sftp.dir())
+    # print(sftp.pwd())
+    # print(sftp.dir())
 
 
     with open(FILENAME, 'wb') as fp:
         sftp.retrbinary('RETR ' + FILENAME, fp.write)
-        # sftp.retrlines('RETR ' + FILENAME, f.write)
 
 def main():
-    '''
-    print("Defaulting to local server for testing")
-    host = 'localhost'
-    user = 'Test'
-    pw = 'RubberDuck'
-    '''
     host = '66.220.9.50'
     user = 'agile_class'
     pw = 'password123!'
