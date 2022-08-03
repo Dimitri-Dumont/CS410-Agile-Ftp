@@ -1,5 +1,5 @@
 from ftplib import FTP
-import os  
+import os
 
 def menu():
     print("1. Disconnect from SFTP server")
@@ -21,11 +21,13 @@ def options(user_input, sftp):
             listDir(sftp)
         case '3':
             listDirLocal()
-        
+        case '4':
+            getFile(sftp)
+
 
 def connect(host, user,pw):
     try:
-        ftp = FTP() 
+        ftp = FTP()
         ftp.connect(host, 21)
         ftp.login(user, pw)
     except:
@@ -37,7 +39,7 @@ def connect(host, user,pw):
 def disconnect(sftp):
     try:
         sftp.close()
-    except: 
+    except:
         print("Error occured closing connection")
     else:
         print("Disconnected")
@@ -50,17 +52,24 @@ def listDirLocal(): # Only listing directories at the moment not files
         for entry in it:
             if not entry.name.startswith('.'):
                 print(entry.name)
-def main():
-    # public ip once server is running remotley: 
-        #host = '67.160.144.238'
 
-    print("Defaulting to local server for testing")
-    host = 'localhost'
-    user = 'Test'
-    pw = 'RubberDuck'
+def getFile(sftp):
+    FILENAME = "SampleText.txt"
+    sftp.cwd("My Documents")
+    # print(sftp.pwd())
+    # print(sftp.dir())
+
+
+    with open(FILENAME, 'wb') as fp:
+        sftp.retrbinary('RETR ' + FILENAME, fp.write)
+
+def main():
+    host = '66.220.9.50'
+    user = 'agile_class'
+    pw = 'password123!'
     ftp = connect(host,user,pw)
-    user_input = menu() 
-    options(user_input,ftp) 
-    
+    user_input = menu()
+    options(user_input,ftp)
+
 if __name__ == "__main__":
     main()
