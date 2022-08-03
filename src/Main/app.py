@@ -2,7 +2,7 @@ from ftplib import FTP
 import os
 
 def menu():
-    print("1. Disconnect from SFTP server")
+    print("\n1. Disconnect from SFTP server (Exit)")
     print("2. List directories & files on server")
     print("3. List directories & files on local machine")
     print("4. Get file from remote server")
@@ -10,7 +10,7 @@ def menu():
     print("6. Get multiple files")
     print("7. Delete file from remote server ")
 
-    user_input = input("Enter number of what you would like to do:\n")
+    user_input = input("\nEnter number of what you would like to do:\n")
     return user_input
 
 def options(user_input, sftp):
@@ -68,8 +68,11 @@ def main():
     user = 'agile_class'
     pw = 'password123!'
     ftp = connect(host,user,pw)
-    user_input = menu()
-    options(user_input,ftp)
+    user_input = 0
+
+    while int(user_input) != 1:
+        user_input = menu()
+        options(user_input,ftp)
 
 if __name__ == "__main__":
     main()
