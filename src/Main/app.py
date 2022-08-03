@@ -53,6 +53,7 @@ def listDirLocal(): # Only listing directories at the moment not files
             if not entry.name.startswith('.'):
                 print(entry.name)
 
+# downloads a single file from server to local machine
 def getFile(sftp):
     FILENAME = "SampleText.txt"
     sftp.cwd("My Documents")
@@ -62,6 +63,28 @@ def getFile(sftp):
 
     with open(FILENAME, 'wb') as fp:
         sftp.retrbinary('RETR ' + FILENAME, fp.write)
+
+#uploads multiple files to server
+def putMultiple(sftp):
+    sftp.encoding = 'utf8'
+
+    filesToUpload = []
+    file_number = 1
+    user_input = ''
+
+    print("\nEnter names of files to upload below. Press x when done/to exit.")
+
+    while (user_input!= 'x'):
+        user_input = input("File name " + str(file_number) + ": ")
+        if user_input != 'x':
+            filesToUpload.append(user_input)
+        file_number += 1
+
+    i = 0
+    while i < len(filesToUpload):
+        with open(filesToUpload[i], 'rb') as fp:
+            sftp.storbinary('STOR ' + filesToUpload[i], fp)
+        i += 1
 
 def main():
     host = '66.220.9.50'
