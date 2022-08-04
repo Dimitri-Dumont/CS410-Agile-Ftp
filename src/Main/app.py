@@ -2,7 +2,7 @@ from ftplib import FTP
 import os
 
 def menu():
-    print("1. Disconnect from ftp server")
+    print("1. Disconnect from ftp server (Exit)")
     print("2. List directories & files on server")
     print("3. List directories & files on local machine")
     print("4. Get a File From Server")
@@ -13,7 +13,7 @@ def menu():
     print("9. Delete File From Server")
     print("10. Upload Multiple Files On Server")
 
-    user_input = input("Enter number of what you would like to do:\n")
+    user_input = input("\nEnter number of what you would like to do:\n")
     return user_input
 #For some reason match doesn't work for my vscode, I'm going to change it to if/elif. You can change it back for the presentation
 def options(user_input, ftp):
@@ -170,8 +170,10 @@ def main():
     user = 'agile_class'
     pw = 'password123!'
     ftp = connect(host,user,pw)
-    user_input = menu()
-    options(user_input,ftp)
+    user_input = 0
+    while int(user_input) != 1:
+        user_input = menu()
+        options(user_input,ftp)
 
 if __name__ == "__main__":
     main()
