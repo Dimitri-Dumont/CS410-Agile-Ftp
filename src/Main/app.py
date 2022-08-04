@@ -2,7 +2,7 @@ from ftplib import FTP
 import os
 
 def menu():
-    print("1. Disconnect from ftp server (Exit)")
+    #print("1. Disconnect from ftp server (Exit)")
     print("2. List directories & files on server")
     print("3. List directories & files on local machine")
     print("4. Get a File From Server")
@@ -76,7 +76,7 @@ def listDirLocal(): # Only listing directories at the moment not files
     print("Files and directories in '", path, "' :")
     print(dir_list)
 
-def getFile(ftp):
+#def getFile(ftp):
     FILENAME = "SampleText.txt"
     ftp.cwd("My Documents")
     # print(ftp.pwd())
