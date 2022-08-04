@@ -2,7 +2,7 @@ from ftplib import FTP
 import os
 
 def menu():
-    #print("1. Disconnect from ftp server (Exit)")
+    print("1. Disconnect from ftp server (Exit)")
     print("2. List directories & files on server")
     print("3. List directories & files on local machine")
     print("4. Get a File From Server")
@@ -15,30 +15,30 @@ def menu():
 
     user_input = input("\nEnter number of what you would like to do:\n")
     return user_input
-#For some reason match doesn't work for my vscode, I'm going to change it to if/elif. You can change it back for the presentation
-def options(user_input, ftp):
-     if user_input == '1':
-            disconnect(ftp)
-     if user_input == '2':
-            listDir(ftp)
-     if user_input == '3':
-            listDirLocal()
-     if user_input == '4':
-            getFile(ftp)
-     if user_input == '5':
-            getMultiple(ftp)
-     if user_input == '6':
-            createDirectory(ftp)
-     if user_input == '7':
-            deleteDirectory(ftp)
-     if user_input == '8':
-            uploadFile(ftp)
-     if user_input == '9':
-            deleteFile(ftp)
-    #not working yet
-     if user_input == '10':
-            uploadMultiple(ftp)
 
+def options(user_input, ftp):
+    match user_input:
+        case'1':
+            disconnect(ftp)
+        case'2':
+            listDir(ftp)
+        case'3':
+            listDirLocal()
+        case'4':
+            getFile(ftp)
+        case'5':
+            getMultiple(ftp)
+        case'6':
+            createDirectory(ftp)
+        case'7':
+            deleteDirectory(ftp)
+        case'8':
+            uploadFile(ftp)
+        case'9':
+            deleteFile(ftp)
+        #not working yet
+        case'10':
+            uploadMultiple(ftp)
 
 def connect(host, user,pw):
     try:
@@ -62,29 +62,23 @@ def disconnect(ftp):
 def listDir(ftp):
     print("*"*50,"list","*"*50)
     ftp.dir()
-    # ftp.nlst()
-    # ftp.retrlines('LIST')
-
+    
 def listDirLocal(): # Only listing directories at the moment not files
- #   with os.scandir('C:\\') as it:
- #       for entry in it:
- #           if not entry.name.startswith('.'):
- #               print(entry)
     print("Current directory: " + os.getcwd())
     path = input("Enter path you wish to view: ")
     dir_list =os.listdir(path)
     print("Files and directories in '", path, "' :")
     print(dir_list)
 
-#def getFile(ftp):
+def getFile(ftp):
     FILENAME = "SampleText.txt"
     ftp.cwd("My Documents")
-    # print(ftp.pwd())
-    # print(ftp.dir())
+   
 
 
     with open(FILENAME, 'wb') as fp:
         ftp.retrbinary('RETR ' + FILENAME, fp.write)
+
 #gets multiple files from specified directory
 def getMultiple(ftp):
     current_directory = ftp.pwd()
@@ -163,7 +157,6 @@ def uploadMultiple(sftp):
         with open(filesToUpload[i], 'rb') as fp:
             sftp.storbinary('STOR ' + filesToUpload[i], fp)
         i += 1
-
 
 def main():
     host = '66.220.9.50'
