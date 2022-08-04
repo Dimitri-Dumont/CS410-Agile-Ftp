@@ -142,15 +142,27 @@ def uploadFile(ftp):
     with open(filename, 'rb') as file:
         ftp.storbinary(f'STOR {filename}', file) 
 
-#can't get this to work, it states "No such file or directory"
-def uploadMultiple(ftp):
-    print(os.getcwd())
-    path = input("Enter local path to directory of the files you wish to upload: ")
-    remote_path = input("Enter remote path to directory of the files you wish to upload: ")
-    for root, dirs, files in os.walk(path):
-        for filename in files:
-            full_fname = os.path.join(root,filename)
-            ftp.storbinary('STOR '+remote_path, open(full_fname, 'rb'))
+#uploads multiple files to server
+def uploadMultiple(sftp):
+    sftp.encoding = 'utf8'
+
+    filesToUpload = []
+    file_number = 1
+    user_input = ''
+
+    print("\nEnter names of files to upload below. Press x when done/to exit.")
+
+    while (user_input!= 'x'):
+        user_input = input("File name " + str(file_number) + ": ")
+        if user_input != 'x':
+            filesToUpload.append(user_input)
+        file_number += 1
+
+    i = 0
+    while i < len(filesToUpload):
+        with open(filesToUpload[i], 'rb') as fp:
+            sftp.storbinary('STOR ' + filesToUpload[i], fp)
+        i += 1
 
 
 def main():
