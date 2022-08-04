@@ -1,10 +1,11 @@
 from ftplib import FTP
+from hashlib import new
 import os
 
 def menu():
-    print("1. Disconnect from ftp server (Exit)")
-    print("2. List directories & files on server")
-    print("3. List directories & files on local machine")
+    print("\n1. Disconnect From Ftp Server (Exit)")
+    print("2. List Directories & Files On Server")
+    print("3. List Directories & Files On Local Machine")
     print("4. Get a File From Server")
     print("5. Get Multiple Files From Server ")
     print("6. Create Directory On Server")
@@ -12,33 +13,39 @@ def menu():
     print("8. Upload File On Server")
     print("9. Delete File From Server")
     print("10. Upload Multiple Files On Server")
+    print("11. Rename File On Remote Server")
+    print("12. Rename File On Local Machine")
+    
 
     user_input = input("\nEnter number of what you would like to do:\n")
     return user_input
-
+#For some reason match doesn't work for my vscode, I'm going to change it to if/elif. You can change it back for the presentation
 def options(user_input, ftp):
-    match user_input:
-        case'1':
+     if user_input == '1':
             disconnect(ftp)
-        case'2':
+     if user_input == '2':
             listDir(ftp)
-        case'3':
+     if user_input == '3':
             listDirLocal()
-        case'4':
+     if user_input == '4':
             getFile(ftp)
-        case'5':
+     if user_input == '5':
             getMultiple(ftp)
-        case'6':
+     if user_input == '6':
             createDirectory(ftp)
-        case'7':
+     if user_input == '7':
             deleteDirectory(ftp)
-        case'8':
+     if user_input == '8':
             uploadFile(ftp)
-        case'9':
+     if user_input == '9':
             deleteFile(ftp)
-        #not working yet
-        case'10':
+     if user_input == '10':
             uploadMultiple(ftp)
+     if user_input == '11':
+            remoteRename(ftp)
+     if user_input == '12':
+            localRename()
+
 
 def connect(host, user,pw):
     try:
@@ -62,22 +69,24 @@ def disconnect(ftp):
 def listDir(ftp):
     print("*"*50,"list","*"*50)
     ftp.dir()
-    
-def listDirLocal(): # Only listing directories at the moment not files
+    # ftp.nlst()
+    # ftp.retrlines('LIST')
+
+def listDirLocal(): 
+
     print("Current directory: " + os.getcwd())
-    path = input("Enter path you wish to view: ")
+    path = input("\nEnter path you wish to view: ")
     dir_list =os.listdir(path)
-    print("Files and directories in '", path, "' :")
+    print("\nFiles and directories in '", path, "' :")
     print(dir_list)
 
-def getFile(ftp):
-    FILENAME = "SampleText.txt"
-    ftp.cwd("My Documents")
-   
-
-
-    with open(FILENAME, 'wb') as fp:
-        ftp.retrbinary('RETR ' + FILENAME, fp.write)
+def getFile(ftp): 
+    filename = input("Enter name of file you wish to download: ")
+    path = input("Enter path of file on server: ")
+    # FILENAME = "SampleText.txt"
+    ftp.cwd(path)
+    with open(filename, 'wb') as fp:
+        ftp.retrbinary('RETR ' + filename, fp.write)
 
 #gets multiple files from specified directory
 def getMultiple(ftp):
@@ -131,14 +140,15 @@ def uploadFile(ftp):
     path = input("What path on the server do you want to upload this file to: ")
     ftp.cwd(path)
     current_directory = ftp.pwd()
-    print("Currently working in: " + current_directory)
+    print("Set directory to: " + current_directory)
+    print(os.getcwd())
     filename= input("Enter local file name you wish to upload: ")
     with open(filename, 'rb') as file:
         ftp.storbinary(f'STOR {filename}', file) 
 
 #uploads multiple files to server
-def uploadMultiple(sftp):
-    sftp.encoding = 'utf8'
+def uploadMultiple(ftp):
+    ftp.encoding = 'utf-8'
 
     filesToUpload = []
     file_number = 1
@@ -155,8 +165,22 @@ def uploadMultiple(sftp):
     i = 0
     while i < len(filesToUpload):
         with open(filesToUpload[i], 'rb') as fp:
-            sftp.storbinary('STOR ' + filesToUpload[i], fp)
+            ftp.storbinary('STOR ' + filesToUpload[i], fp)
         i += 1
+
+def remoteRename(ftp):
+    path = input("Input path of file you wish to rename: ")
+    fromName = input("Input name of file you want to rename: ")
+    toName = input("What would you like to rename it to: ")
+    ftp.cwd(path)
+    ftp.rename(fromName,toName)
+
+def localRename():
+    currentPath = os.getcwd()
+    print("Your current directory: " + currentPath)
+    oldFileName = input("Enter path/filename of file you wish to change: ")
+    newFileName = input("Enter path/filename of file you wish to change it to: ")
+    os.rename(oldFileName,newFileName)
 
 def main():
     host = '66.220.9.50'
