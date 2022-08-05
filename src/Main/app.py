@@ -1,5 +1,7 @@
 from ftplib import FTP
+from ftplib import error_perm
 import os
+import sys
 
 def menu():
     print("1. Disconnect from ftp server (Exit)")
@@ -12,6 +14,7 @@ def menu():
     print("8. Upload File On Server")
     print("9. Delete File From Server")
     print("10. Upload Multiple Files On Server")
+    print("11. Copy directories")
 
     user_input = input("\nEnter number of what you would like to do:\n")
     return user_input
@@ -39,6 +42,8 @@ def options(user_input, ftp):
         #not working yet
         case'10':
             uploadMultiple(ftp)
+        case'11':
+            copyDirHelp(ftp)
 
 def connect(host, user,pw):
     try:
@@ -78,6 +83,41 @@ def getFile(ftp):
 
     with open(FILENAME, 'wb') as fp:
         ftp.retrbinary('RETR ' + FILENAME, fp.write)
+
+def copyDirHelp(ftp):
+    path = '\\'
+    # example destination C:\temp\
+    destination = input("destination direcotry?\n")
+    copyDir(path,destination,ftp)
+
+# copyDir copies all directories (not files) to designated local destination
+def copyDir(path,destination,ftp):
+    try:
+        ftp.cwd(path)
+        #clone path to destination
+        os.chdir(destination)
+        os.mkdir(destination[0:len(destination)-1]+path)
+        print (destination[0:len(destination)-1]+path+" built")
+    except OSError:
+        #folder already exists at destination
+        pass
+    except error_perm:
+        print ( "error: could not change to "+path )
+        sys.exit()
+
+    #list children:
+    filelist=ftp.nlst()
+    
+    for file in filelist:
+        try:
+            #check if folder or file
+            ftp.cwd(path+file+"/")
+            #if file explore
+            copyDir(path+file+"/",destination,ftp)
+        except error_perm:
+            #not a folder with accessible content
+            return
+
 
 #gets multiple files from specified directory
 def getMultiple(ftp):
