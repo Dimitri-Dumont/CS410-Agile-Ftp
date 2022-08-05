@@ -2,6 +2,7 @@ from ftplib import FTP
 from ftplib import error_perm
 import os
 import sys
+import signal
 
 def menu():
     print("1. Disconnect from ftp server (Exit)")
@@ -227,14 +228,24 @@ def saveInfo():
     }
     return info
 
+def timeout_handler(signal, frame):
+    raise Exception(f'Disconnected due to inactivity')
+
 def main():
     info = saveInfo();
     ftp = connect(info)
 
     user_input = 0
-    while int(user_input) != 1:
-        user_input = menu()
-        options(user_input,ftp)
+    signal.alarm(300) #times out after 5 minutes
+    signal.signal(signal.SIGALRM, timeout_handler)
+
+    try:
+        while int(user_input) != 1:
+            user_input = menu()
+            options(user_input,ftp)
+    except Exception as e:
+        print(e)
+        disconnect(ftp)
 
 if __name__ == "__main__":
     main()
