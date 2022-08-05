@@ -15,6 +15,8 @@ def menu():
     print("9. Delete File From Server")
     print("10. Upload Multiple Files On Server")
     print("11. Copy directories")
+    print("12. Rename File On Remote Server")
+    print("13. Rename File On Local Machine")
 
     user_input = input("\nEnter number of what you would like to do:\n")
     return user_input
@@ -39,11 +41,14 @@ def options(user_input, ftp):
             uploadFile(ftp)
         case'9':
             deleteFile(ftp)
-        #not working yet
         case'10':
             uploadMultiple(ftp)
         case'11':
             copyDirHelp(ftp)
+        case'12':
+            remoteRename(ftp)
+        case'13':
+            localRename()
 
 def connect(host, user,pw):
     try:
@@ -197,6 +202,23 @@ def uploadMultiple(sftp):
         with open(filesToUpload[i], 'rb') as fp:
             sftp.storbinary('STOR ' + filesToUpload[i], fp)
         i += 1
+
+#rename a file on the remote server
+def remoteRename(ftp):
+    path = input("Input path of file you wish to rename: ")
+    fromName = input("Input name of file you want to rename: ")
+    toName = input("What would you like to rename it to: ")
+    ftp.cwd(path)
+    ftp.rename(fromName,toName)
+
+#rename a file on your local machine
+def localRename():
+    currentPath = os.getcwd()
+    print("Your current working directory: " + currentPath)
+    oldFileName = input("Enter path/filename of file you wish to change: ")
+    newFileName = input("Enter path/filename of file you wish to change it to: ")
+    os.rename(oldFileName,newFileName)
+
 
 def main():
     host = '66.220.9.50'
