@@ -53,12 +53,8 @@ def options(user_input, ftp):
         case'13':
             localRename()
 
-<<<<<<< HEAD
 
-def connect(host, user, pw):
-=======
 def connect(info):
->>>>>>> 141f2f5a4ddbfbd5d495fd6fc61a0ddfe8c52c2c
     try:
         ftp = FTP()
         ftp.connect(info["host"], 21)
@@ -82,15 +78,10 @@ def disconnect(ftp):
 def listDir(ftp):
     print("*"*50, "list", "*"*50)
     ftp.dir()
-<<<<<<< HEAD
     print("List of directories and files on server")
 
 
 def listDirLocal():  # Only listing directories at the moment not files
-=======
-
-def listDirLocal(): # Only listing directories at the moment not files
->>>>>>> 141f2f5a4ddbfbd5d495fd6fc61a0ddfe8c52c2c
     print("Current directory: " + os.getcwd())
     path = input("Enter path you wish to view: ")
     dir_list = os.listdir(path)
@@ -101,12 +92,6 @@ def listDirLocal(): # Only listing directories at the moment not files
 def getFile(ftp):
     FILENAME = "SampleText.txt"
     ftp.cwd("My Documents")
-<<<<<<< HEAD
-=======
-
-
->>>>>>> 141f2f5a4ddbfbd5d495fd6fc61a0ddfe8c52c2c
-
     with open(FILENAME, 'wb') as fp:
         ftp.retrbinary('RETR ' + FILENAME, fp.write)
 
@@ -134,13 +119,8 @@ def copyDir(path, destination, ftp):
         print("error: could not change to "+path)
         sys.exit()
 
-<<<<<<< HEAD
     # list children:
     filelist = ftp.nlst()
-=======
-    #list children:
-    filelist=ftp.nlst()
->>>>>>> 141f2f5a4ddbfbd5d495fd6fc61a0ddfe8c52c2c
 
     for file in filelist:
         try:
@@ -214,12 +194,7 @@ def uploadFile(ftp):
     filename = input("Enter local file name you wish to upload: ")
     with open(filename, 'rb') as file:
         ftp.storbinary(f'STOR {filename}', file)
-<<<<<<< HEAD
 
-# uploads multiple files to server
-
-=======
->>>>>>> 141f2f5a4ddbfbd5d495fd6fc61a0ddfe8c52c2c
 
 def uploadMultiple(sftp):
     sftp.encoding = 'utf8'
@@ -263,6 +238,7 @@ def localRename():
         "Enter path/filename of file you wish to change it to: ")
     os.rename(oldFileName, newFileName)
 
+
 def saveInfo():
     info = {
         "host": '66.220.9.50',
@@ -271,36 +247,27 @@ def saveInfo():
     }
     return info
 
+
 def timeout_handler(signal, frame):
     raise Exception(f'Disconnected due to inactivity')
 
-def main():
-<<<<<<< HEAD
-    host = '66.220.9.50'
-    user = 'agile_class'
-    pw = 'password123!'
-    ftp = connect(host, user, pw)
-    user_input = 0
-    while int(user_input) != 1:
-        user_input = menu()
-        options(user_input, ftp)
 
-=======
-    info = saveInfo();
+def main():
+    info = saveInfo()
     ftp = connect(info)
 
     user_input = 0
-    signal.alarm(300) #times out after 5 minutes
+    signal.alarm(300)  # times out after 5 minutes
     signal.signal(signal.SIGALRM, timeout_handler)
 
     try:
         while int(user_input) != 1:
             user_input = menu()
-            options(user_input,ftp)
+            options(user_input, ftp)
     except Exception as e:
         print(e)
         disconnect(ftp)
->>>>>>> 141f2f5a4ddbfbd5d495fd6fc61a0ddfe8c52c2c
+
 
 if __name__ == "__main__":
     main()
