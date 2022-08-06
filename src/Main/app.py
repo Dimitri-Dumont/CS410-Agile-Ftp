@@ -3,6 +3,7 @@ from ftplib import error_perm
 import os
 import sys
 import signal
+from tkinter import EXCEPTION
 
 
 def menu():
@@ -82,6 +83,7 @@ def listDir(ftp):
 
 
 def listDirLocal():  # Only listing directories at the moment not files
+
     print("Current directory: " + os.getcwd())
     path = input("Enter path you wish to view: ")
     dir_list = os.listdir(path)
@@ -92,6 +94,7 @@ def listDirLocal():  # Only listing directories at the moment not files
 def getFile(ftp):
     FILENAME = "SampleText.txt"
     ftp.cwd("My Documents")
+    print(ftp.cwd)
     with open(FILENAME, 'wb') as fp:
         ftp.retrbinary('RETR ' + FILENAME, fp.write)
 
@@ -162,6 +165,7 @@ def createDirectory(ftp):
     name = input("Input name of the directory: ")
     ftp.cwd(path)
     ftp.mkd(name)
+    return name
 
 
 def deleteDirectory(ftp):
@@ -242,8 +246,8 @@ def localRename():
 def saveInfo():
     info = {
         "host": '66.220.9.50',
-        "user": 'agile_class',
-        "pw": 'password123!'
+        "user": 'agileclass3',
+        "pw": 'agile123!'
     }
     return info
 
