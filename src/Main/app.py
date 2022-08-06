@@ -2,6 +2,7 @@ from ftplib import FTP
 from ftplib import error_perm
 import os
 import sys
+import signal
 
 def menu():
     print("1. Disconnect from ftp server (Exit)")
@@ -50,15 +51,15 @@ def options(user_input, ftp):
         case'13':
             localRename()
 
-def connect(host, user,pw):
+def connect(info):
     try:
         ftp = FTP()
-        ftp.connect(host, 21)
-        ftp.login(user, pw)
+        ftp.connect(info["host"], 21)
+        ftp.login(info["user"], info["pw"])
     except:
         print('Connection failed')
     else:
-        print('Connected to ' + host)
+        print('Connected to ' + info["host"])
         return ftp
 
 def disconnect(ftp):
@@ -72,7 +73,7 @@ def disconnect(ftp):
 def listDir(ftp):
     print("*"*50,"list","*"*50)
     ftp.dir()
-    
+
 def listDirLocal(): # Only listing directories at the moment not files
     print("Current directory: " + os.getcwd())
     path = input("Enter path you wish to view: ")
@@ -83,7 +84,7 @@ def listDirLocal(): # Only listing directories at the moment not files
 def getFile(ftp):
     FILENAME = "SampleText.txt"
     ftp.cwd("My Documents")
-   
+
 
 
     with open(FILENAME, 'wb') as fp:
@@ -112,7 +113,7 @@ def copyDir(path,destination,ftp):
 
     #list children:
     filelist=ftp.nlst()
-    
+
     for file in filelist:
         try:
             #check if folder or file
@@ -179,7 +180,7 @@ def uploadFile(ftp):
     print("Currently working in: " + current_directory)
     filename= input("Enter local file name you wish to upload: ")
     with open(filename, 'rb') as file:
-        ftp.storbinary(f'STOR {filename}', file) 
+        ftp.storbinary(f'STOR {filename}', file)
 
 #uploads multiple files to server
 def uploadMultiple(sftp):
@@ -219,16 +220,32 @@ def localRename():
     newFileName = input("Enter path/filename of file you wish to change it to: ")
     os.rename(oldFileName,newFileName)
 
+def saveInfo():
+    info = {
+        "host": '66.220.9.50',
+        "user": 'agile_class',
+        "pw": 'password123!'
+    }
+    return info
+
+def timeout_handler(signal, frame):
+    raise Exception(f'Disconnected due to inactivity')
 
 def main():
-    host = '66.220.9.50'
-    user = 'agile_class'
-    pw = 'password123!'
-    ftp = connect(host,user,pw)
+    info = saveInfo();
+    ftp = connect(info)
+
     user_input = 0
-    while int(user_input) != 1:
-        user_input = menu()
-        options(user_input,ftp)
+    signal.alarm(300) #times out after 5 minutes
+    signal.signal(signal.SIGALRM, timeout_handler)
+
+    try:
+        while int(user_input) != 1:
+            user_input = menu()
+            options(user_input,ftp)
+    except Exception as e:
+        print(e)
+        disconnect(ftp)
 
 if __name__ == "__main__":
     main()
