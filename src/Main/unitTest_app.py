@@ -79,7 +79,7 @@ class TestStringMethods(unittest.TestCase):
         self.assertTrue(check)
         ftps.close()
 
-    @patch('app.localRename')
+    @patch('app.localRename', return_value=b'mytestFile.txt')
     def testRenameLocal(self, mock_localRename):
 
         mock_localRename.return_value = 'testFile.txt'
@@ -95,7 +95,7 @@ class TestStringMethods(unittest.TestCase):
     #     check = ftp.myPath.exists('mytestFile.txt')
     #     self.assertTrue(check)
 
-    @patch('app.createDirectory')
+    @patch('app.createDirectory', return_value=b'newFolder5')
     def testCreateDirectoryServer(self, mock_createDirectory):
         # For this test to work you need to have a folder
         # called agileclass2 on your server
@@ -124,7 +124,7 @@ class TestStringMethods(unittest.TestCase):
 
         self.assertTrue(app.deleteDirectory, "newFolder5")
 
-    @patch('app.deleteFile')
+    @patch('app.deleteFile', return_value=b'')
     def testDeleteFileServer(self, mockDeleteFile):
         mockDeleteFile.return_value = 'parentFolder'
         mockDeleteFile.return_value = 'sampletext.txt'
