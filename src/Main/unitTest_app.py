@@ -56,7 +56,7 @@ class TestStringMethods(unittest.TestCase):
 
         capturedOutput = io.StringIO()
         sys.stdout = capturedOutput
-        sys.stdin = io.StringIO('newFolder')
+        sys.stdin = io.StringIO('/')
         app.listDirLocal()
         self.assertIn('Files and directories in ', capturedOutput.getvalue()
                       )

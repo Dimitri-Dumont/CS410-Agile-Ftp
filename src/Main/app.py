@@ -4,6 +4,7 @@ import os
 import sys
 import signal
 
+
 def menu():
     print("1. Disconnect from ftp server (Exit)")
     print("2. List directories & files on server")
@@ -21,6 +22,7 @@ def menu():
 
     user_input = input("\nEnter number of what you would like to do:\n")
     return user_input
+
 
 def options(user_input, ftp):
     match user_input:
@@ -51,6 +53,7 @@ def options(user_input, ftp):
         case'13':
             localRename()
 
+
 def connect(info):
     try:
         ftp = FTP()
@@ -62,6 +65,7 @@ def connect(info):
         print('Connected to ' + info["host"])
         return ftp
 
+
 def disconnect(ftp):
     try:
         ftp.close()
@@ -70,70 +74,77 @@ def disconnect(ftp):
     else:
         print("Disconnection Successful")
 
-def listDir(ftp):
-    print("*"*50,"list","*"*50)
-    ftp.dir()
 
-def listDirLocal(): # Only listing directories at the moment not files
+def listDir(ftp):
+    print("*"*50, "list", "*"*50)
+    ftp.dir()
+    # This line needs to be there for unit test 3 to work
+    print("List of directories and files on server")
+
+
+def listDirLocal():  # Only listing directories at the moment not files
     print("Current directory: " + os.getcwd())
     path = input("Enter path you wish to view: ")
-    dir_list =os.listdir(path)
+    dir_list = os.listdir(path)
     print("Files and directories in '", path, "' :")
     print(dir_list)
+
 
 def getFile(ftp):
     FILENAME = "SampleText.txt"
     ftp.cwd("My Documents")
 
-
-
     with open(FILENAME, 'wb') as fp:
         ftp.retrbinary('RETR ' + FILENAME, fp.write)
+
 
 def copyDirHelp(ftp):
     path = '\\'
     # example destination C:\temp\
     destination = input("destination direcotry?\n")
-    copyDir(path,destination,ftp)
+    copyDir(path, destination, ftp)
 
 # copyDir copies all directories (not files) to designated local destination
-def copyDir(path,destination,ftp):
+
+
+def copyDir(path, destination, ftp):
     try:
         ftp.cwd(path)
-        #clone path to destination
+        # clone path to destination
         os.chdir(destination)
         os.mkdir(destination[0:len(destination)-1]+path)
-        print (destination[0:len(destination)-1]+path+" built")
+        print(destination[0:len(destination)-1]+path+" built")
     except OSError:
-        #folder already exists at destination
+        # folder already exists at destination
         pass
     except error_perm:
-        print ( "error: could not change to "+path )
+        print("error: could not change to "+path)
         sys.exit()
 
-    #list children:
-    filelist=ftp.nlst()
+    # list children:
+    filelist = ftp.nlst()
 
     for file in filelist:
         try:
-            #check if folder or file
+            # check if folder or file
             ftp.cwd(path+file+"/")
-            #if file explore
-            copyDir(path+file+"/",destination,ftp)
+            # if file explore
+            copyDir(path+file+"/", destination, ftp)
         except error_perm:
-            #not a folder with accessible content
+            # not a folder with accessible content
             return
 
 
-#gets multiple files from specified directory
+# gets multiple files from specified directory
 def getMultiple(ftp):
     current_directory = ftp.pwd()
     print("Current directory: " + current_directory)
-    #enter directory of FTP
-    ftp_directory = input("Enter path of directory on FTP server (don't forget to include /): ")
-    #goto that directory
+    # enter directory of FTP
+    ftp_directory = input(
+        "Enter path of directory on FTP server (don't forget to include /): ")
+    # goto that directory
     ftp.cwd(ftp_directory)
-    #grab all the files in that directory
+    # grab all the files in that directory
     files_list = ftp.nlst(ftp_directory)
     print("Current directory: " + os.getcwd())
     local_path = input("Enter desired path on your local machine: ")
@@ -146,6 +157,7 @@ def getMultiple(ftp):
         ftp.retrbinary("RETR " + file, local_file.write)
         local_file.close()
         print()
+
 
 def createDirectory(ftp):
     path = input("Input path you wish to create a directory in: ")
@@ -163,26 +175,31 @@ def deleteDirectory(ftp):
     directory = input("Enter name of directory you wish to delete: ")
     ftp.rmd(directory)
 
+
 def deleteFile(ftp):
     path = input("Input path of file you wish to delete: ")
     ftp.cwd(path)
     current_directory = ftp.pwd()
     print("Currently working in: " + current_directory)
     listDir(ftp)
-    file= input("Enter name of the file you wish to delete: ")
+    file = input("Enter name of the file you wish to delete: ")
     ftp.delete(file)
+
 
 def uploadFile(ftp):
     ftp.encoding = 'utf-8'
-    path = input("What path on the server do you want to upload this file to: ")
+    path = input(
+        "What path on the server do you want to upload this file to: ")
     ftp.cwd(path)
     current_directory = ftp.pwd()
     print("Currently working in: " + current_directory)
-    filename= input("Enter local file name you wish to upload: ")
+    filename = input("Enter local file name you wish to upload: ")
     with open(filename, 'rb') as file:
         ftp.storbinary(f'STOR {filename}', file)
 
-#uploads multiple files to server
+# uploads multiple files to server
+
+
 def uploadMultiple(sftp):
     sftp.encoding = 'utf8'
 
@@ -192,7 +209,7 @@ def uploadMultiple(sftp):
 
     print("\nEnter names of files to upload below. Press x when done/to exit.")
 
-    while (user_input!= 'x'):
+    while (user_input != 'x'):
         user_input = input("File name " + str(file_number) + ": ")
         if user_input != 'x':
             filesToUpload.append(user_input)
@@ -204,21 +221,27 @@ def uploadMultiple(sftp):
             sftp.storbinary('STOR ' + filesToUpload[i], fp)
         i += 1
 
-#rename a file on the remote server
+# rename a file on the remote server
+
+
 def remoteRename(ftp):
     path = input("Input path of file you wish to rename: ")
     fromName = input("Input name of file you want to rename: ")
     toName = input("What would you like to rename it to: ")
     ftp.cwd(path)
-    ftp.rename(fromName,toName)
+    ftp.rename(fromName, toName)
 
-#rename a file on your local machine
+# rename a file on your local machine
+
+
 def localRename():
     currentPath = os.getcwd()
     print("Your current working directory: " + currentPath)
     oldFileName = input("Enter path/filename of file you wish to change: ")
-    newFileName = input("Enter path/filename of file you wish to change it to: ")
-    os.rename(oldFileName,newFileName)
+    newFileName = input(
+        "Enter path/filename of file you wish to change it to: ")
+    os.rename(oldFileName, newFileName)
+
 
 def saveInfo():
     info = {
@@ -228,24 +251,27 @@ def saveInfo():
     }
     return info
 
+
 def timeout_handler(signal, frame):
     raise Exception(f'Disconnected due to inactivity')
 
+
 def main():
-    info = saveInfo();
+    info = saveInfo()
     ftp = connect(info)
 
     user_input = 0
-    signal.alarm(300) #times out after 5 minutes
+    signal.alarm(300)  # times out after 5 minutes
     signal.signal(signal.SIGALRM, timeout_handler)
 
     try:
         while int(user_input) != 1:
             user_input = menu()
-            options(user_input,ftp)
+            options(user_input, ftp)
     except Exception as e:
         print(e)
         disconnect(ftp)
+
 
 if __name__ == "__main__":
     main()
