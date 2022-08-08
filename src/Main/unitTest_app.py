@@ -131,6 +131,22 @@ class TestStringMethods(unittest.TestCase):
 
         self.assertTrue(app.deleteDirectory, " ")
 
+    def test_ConnectionInfo_success(self):
+        info = app.saveInfo()
+        self.assertEqual(info["host"], "66.220.9.50")
+        self.assertEqual(info["user"], "agile_class")
+        self.assertEqual(info["pw"], "password123!")
+
+    def test_UseConnInfo_success(self):
+        capturedOutput = io.StringIO()
+        sys.stdout = capturedOutput
+
+        info = app.saveInfo()
+        ftp = app.connect(info)
+
+        sys.stdout = sys.__stdout__
+        self.assertEqual(capturedOutput.getvalue(),'Connected to ' + info["host"])
+
 
 if __name__ == '__main__':
     unittest.main()
