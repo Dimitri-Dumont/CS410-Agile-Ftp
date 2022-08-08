@@ -3,11 +3,12 @@ import app
 import io
 import sys
 
+
 class TestStringMethods(unittest.TestCase):
 
     def test_connection(self):
         capturedOutput = io.StringIO()                  # Create StringIO object
-        sys.stdout = capturedOutput                     #  and redirect stdout.
+        sys.stdout = capturedOutput  # and redirect stdout.
         host = 'localhost'
         user = 'Test'
         pw = 'RubberDuck'
@@ -22,15 +23,16 @@ class TestStringMethods(unittest.TestCase):
         self.assertEqual(info["pw"], "password123!")
 
     def test_UseConnInfo_success(self):
-        capturedOutput = io.StringIO()                 
+        capturedOutput = io.StringIO()
         sys.stdout = capturedOutput
 
         info = app.saveInfo()
         ftp = app.connect(info)
 
         sys.stdout = sys.__stdout__
-        self.assertEqual(capturedOutput.getvalue(),'Connected to ' + info["host"])   # Assert console output is expected value.
-
+        # Assert console output is expected value.
+        self.assertEqual(capturedOutput.getvalue(),
+                         'Connected to ' + info["host"])
 
 
 if __name__ == '__main__':
