@@ -149,14 +149,32 @@ class TestStringMethods(unittest.TestCase):
         sys.stdout = sys.__stdout__
         self.assertEqual(capturedOutput.getvalue(),'Connected to ' + info["host"] + '\n')
 
-    @patch('app.uploadFile', return_value=b'newFile')
-    def test_uploadFile_success(self, mockUploadFile):
+    # @patch('app.uploadFile')
+    def test_uploadFile_success(self):
+        '''
+        result = app.uploadFile()
+        mock.assert_called()
+        '''
 
-        mock = app.uploadFile()
-        mockUploadFile.assert_called_once()
-        # mockUploadFile.assert_called()
+        info = app.saveInfo()
+        ftps = app.connect(info)
+        app.uploadFile(ftps)
+        self.assertEqual(True, result)
+
+        # self.assertEqual(app.uploadFile(), True)
         # mockUploadFile.return_value = 'newFile'
         # self.assertTrue(app.uploadFile, " ")
+
+    '''
+    @patch('app.uploadMultiple')
+    def test_uploadMultiple_success(self, mockObj):
+        info = app.saveInfo()
+        ftps = app.connect(info)
+        app.uploadMultiple(ftps)
+
+        result = app.uploadMultiple(ftp)
+        mockObj.assert_called()
+    '''
 
 
 
