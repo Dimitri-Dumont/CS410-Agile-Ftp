@@ -261,7 +261,7 @@ def main():
     ftp = connect(info)
 
     user_input = 0
-    signal.alarm(300)  # times out after 5 minutes
+    signal.alarm(600)  # times out after 10 minutes
     signal.signal(signal.SIGALRM, timeout_handler)
 
     try:
