@@ -186,40 +186,59 @@ def deleteFile(ftp):
     ftp.delete(file)
 
 
-def uploadFile(ftp):
+def uploadFile(ftp, test=False):
     ftp.encoding = 'utf-8'
-    path = input(
-        "What path on the server do you want to upload this file to: ")
-    ftp.cwd(path)
-    current_directory = ftp.pwd()
-    print("Currently working in: " + current_directory)
-    filename = input("Enter local file name you wish to upload: ")
-    with open(filename, 'rb') as file:
-        ftp.storbinary(f'STOR {filename}', file)
+
+    if test:
+        ftp.cwd('/')
+        filename = 'uploadFileTest1.rtf'
+    else:
+        path = input(
+            "What path on the server do you want to upload this file to: ")
+        ftp.cwd(path)
+        current_directory = ftp.pwd()
+        print("Currently working in: " + current_directory)
+        filename = input("Enter local file name you wish to upload: ")
+
+    try:
+        with open(filename, 'rb') as file:
+            ftp.storbinary(f'STOR {filename}', file)
+        return True
+    except Exception as e:
+        return False
+
 
 # uploads multiple files to server
-
-
-def uploadMultiple(sftp):
-    sftp.encoding = 'utf8'
+def uploadMultiple(sftp, test=False):
+    sftp.encoding = 'utf-8'
 
     filesToUpload = []
     file_number = 1
     user_input = ''
 
-    print("\nEnter names of files to upload below. Press x when done/to exit.")
+    if test:
+        filesToUpload = ['uploadMultiple1.rtf', 'uploadMultiple2.rtf']
+    else:
+        print("\nEnter names of files to upload below. Press x when done/to exit.")
+        print("NOTE: file must be in current working directory (ie in Main)")
 
-    while (user_input != 'x'):
-        user_input = input("File name " + str(file_number) + ": ")
-        if user_input != 'x':
-            filesToUpload.append(user_input)
-        file_number += 1
+        while (user_input != 'x'):
+            user_input = input("File name " + str(file_number) + ": ")
+            if user_input != 'x':
+                filesToUpload.append(user_input)
+            file_number += 1
 
     i = 0
-    while i < len(filesToUpload):
-        with open(filesToUpload[i], 'rb') as fp:
-            sftp.storbinary('STOR ' + filesToUpload[i], fp)
-        i += 1
+
+    try:
+        while i < len(filesToUpload):
+            with open(filesToUpload[i], 'rb') as fp:
+                sftp.storbinary('STOR ' + filesToUpload[i], fp)
+            i += 1
+        return True
+    except Exception as e:
+        return False
+
 
 # rename a file on the remote server
 

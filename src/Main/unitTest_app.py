@@ -143,40 +143,44 @@ class TestStringMethods(unittest.TestCase):
         capturedOutput = io.StringIO()
         sys.stdout = capturedOutput
 
-        info = app.saveInfo()
+        info = {
+            "host": '66.220.9.50',
+            "user": 'agile_class',
+            "pw": 'password123!'
+        }
         ftp = app.connect(info)
 
         sys.stdout = sys.__stdout__
         self.assertEqual(capturedOutput.getvalue(),'Connected to ' + info["host"] + '\n')
 
-    # @patch('app.uploadFile')
     def test_uploadFile_success(self):
-        '''
-        result = app.uploadFile()
-        mock.assert_called()
-        '''
+        # Must have uploadFileTest.rtf in Main folder in order to test. See
+        # uploadFile() in app.py
 
-        info = app.saveInfo()
-        ftps = app.connect(info)
-        app.uploadFile(ftps)
-        self.assertEqual(True, result)
+        info = {
+            "host": '66.220.9.50',
+            "user": 'agile_class',
+            "pw": 'password123!'
+        }
+        ftp = app.connect(info)
+        result = app.uploadFile(ftp, True)
 
-        # self.assertEqual(app.uploadFile(), True)
-        # mockUploadFile.return_value = 'newFile'
-        # self.assertTrue(app.uploadFile, " ")
+        self.assertTrue(result)
 
-    '''
-    @patch('app.uploadMultiple')
-    def test_uploadMultiple_success(self, mockObj):
-        info = app.saveInfo()
-        ftps = app.connect(info)
-        app.uploadMultiple(ftps)
+    def test_uploadMultiple_success(self):
+        # Must have uploadMultiple1.rtf and uploadMultiple2.rtf in Main folder
+        # to test. See uploadMultiple() in app.py
 
-        result = app.uploadMultiple(ftp)
-        mockObj.assert_called()
-    '''
+        info = {
+            "host": '66.220.9.50',
+            "user": 'agile_class',
+            "pw": 'password123!'
+        }
 
+        ftp = app.connect(info)
+        result = app.uploadMultiple(ftp, True)
 
+        self.assertTrue(result)
 
 if __name__ == '__main__':
     unittest.main()
