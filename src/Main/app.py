@@ -98,10 +98,11 @@ def getFile(ftp):
         ftp.retrbinary('RETR ' + FILENAME, fp.write)
 
 
-def copyDirHelp(ftp):
+def copyDirHelp(ftp,destination=""):
     path = '\\'
     # example destination C:\temp\
-    destination = input("destination direcotry?\n")
+    if destination == "" :
+        destination = input("destination direcotry?\n")
     copyDir(path, destination, ftp)
 
 # copyDir copies all directories (not files) to designated local destination
@@ -136,18 +137,24 @@ def copyDir(path, destination, ftp):
 
 
 # gets multiple files from specified directory
-def getMultiple(ftp):
+def getMultiple(ftp,ftp_directory="",local_path=""):
     current_directory = ftp.pwd()
     print("Current directory: " + current_directory)
+
     # enter directory of FTP
-    ftp_directory = input(
-        "Enter path of directory on FTP server (don't forget to include /): ")
+    if ftp_directory == "":
+        ftp_directory = input(
+            "Enter path of directory on FTP server (don't forget to include /): ")
+            
     # goto that directory
     ftp.cwd(ftp_directory)
     # grab all the files in that directory
     files_list = ftp.nlst(ftp_directory)
     print("Current directory: " + os.getcwd())
-    local_path = input("Enter desired path on your local machine: ")
+
+    if local_path == "":
+        local_path = input("Enter desired path on your local machine: ")
+
     for file in files_list:
         print("local path: " + local_path)
         local_fn = os.path.join(local_path, os.path.basename(file))
@@ -224,12 +231,16 @@ def uploadMultiple(sftp):
 # rename a file on the remote server
 
 
-def remoteRename(ftp):
-    path = input("Input path of file you wish to rename: ")
-    fromName = input("Input name of file you want to rename: ")
-    toName = input("What would you like to rename it to: ")
+def remoteRename(ftp,path="",fromName="",toName=""):
+    
+    if path == "":
+        path = input("Input path of file you wish to rename: ")
+        fromName = input("Input name of file you want to rename: ")
+        toName = input("What would you like to rename it to: ")
+
     ftp.cwd(path)
     ftp.rename(fromName, toName)
+
 
 # rename a file on your local machine
 
@@ -261,8 +272,8 @@ def main():
     ftp = connect(info)
 
     user_input = 0
-    signal.alarm(300)  # times out after 5 minutes
-    signal.signal(signal.SIGALRM, timeout_handler)
+    # signal.alarm(300)  # times out after 5 minutes
+    # signal.signal(signal.SIGALRM, timeout_handler)
 
     try:
         while int(user_input) != 1:

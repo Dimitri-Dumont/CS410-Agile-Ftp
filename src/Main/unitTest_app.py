@@ -1,4 +1,4 @@
-from re import A
+from re import A, T
 import unittest
 from unittest.mock import patch
 import app
@@ -9,19 +9,19 @@ from ftplib import FTP
 
 
 class TestStringMethods(unittest.TestCase):
-
+    info = {
+                "host": '66.220.9.50',
+                "user": 'agile_class',
+                "pw": 'password123!'
+            }
     def testConnection(self):
-        info = {
-            "host": '66.220.9.50',
-            "user": 'DimitriDumont',
-            "pw": 'Pergina93.'
-        }
+        
         capturedOutput = io.StringIO()
         sys.stdout = capturedOutput
-        app.connect(info)
+        app.connect(self.info)
         sys.stdout = sys.__stdout__
         self.assertEqual(capturedOutput.getvalue(),
-                         'Connected to ' + info["host"]+'\n')
+                         'Connected to ' + self.info["host"]+'\n')
 
     def testDisconnectServer(self):
         ftps = FTP()
@@ -37,13 +37,7 @@ class TestStringMethods(unittest.TestCase):
         # you would need to change it to your local host or
         # webserver for this to run
 
-        info = {
-            "host": '66.220.9.50',
-            "user": 'DimitriDumont',
-            "pw": 'Pergina93.'
-        }
-
-        ftps = app.connect(info)
+        ftps = app.connect(self.info)
         capturedOutput = io.StringIO()
         sys.stdout = capturedOutput
         app.listDir(ftps)
@@ -66,12 +60,7 @@ class TestStringMethods(unittest.TestCase):
         # called My Documents in your server with a file called
         # SampleText.txt
 
-        info = {
-            "host": '66.220.9.50',
-            "user": 'DimitriDumont',
-            "pw": 'Pergina93.'
-        }
-        ftps = app.connect(info)
+        ftps = app.connect(self.info)
         app.getFile(ftps)
 
         path = os.getcwd()
@@ -86,31 +75,31 @@ class TestStringMethods(unittest.TestCase):
         mock_localRename.return_value = 'mytestFile.txt'
         self.assertEqual(app.localRename(), "mytestFile.txt")
 
-    # def testRenameServer(self):
-    #     ftp = FTP()
-    #     myPath = ftp.cwd
-    #     fileName = "testFile.txt"
-    #     newName = "mytestFile.txt"
-    #     ftp.rename(fileName, newName)
-    #     check = ftp.myPath.exists('mytestFile.txt')
-    #     self.assertTrue(check)
+    def testRenameServer(self):
+        ftp = app.connect(self.info)
+        try:
+            app.remoteRename(ftp,"/","DONOTDELETE.txt","testRenamed.txt")
+               
+        except:
+            self.fail("Exception thrown"); # assert error not thrown
+        app.remoteRename(ftp,"/","testRenamed.txt","DONOTDELETE.txt") # reset file name to original
+
+    def testCopyDir(self):
+        ftp = app.connect(self.info)
+        try:
+            app.copyDirHelp(ftp,os.getcwd() + "/testDir")
+        except:
+            self.fail("Exception thrown"); # assert error not thrown
+
+    def testGetMult(self):
+            ftp = app.connect(self.info)
+            try:
+                app.getMultiple(ftp,"/testDir", os.getcwd())
+            except:
+                self.fail("Exception thrown"); # assert error not thrown
 
     @patch('app.createDirectory', return_value=b'newFolder5')
     def testCreateDirectoryServer(self, mock_createDirectory):
-        # For this test to work you need to have a folder
-        # called agileclass2 on your server
-
-        # info = {
-        #     "host": '66.220.9.50',
-        #     "user": 'agileclass3',
-        #     "pw": 'agile123!'
-        # }
-        # ftps = app.connect(info)
-        # sys.stdin = io.StringIO('My Documents')
-        # sys.stdin = io.StringIO('newDirectory')
-        # app.createDirectory(ftps)
-        # path = ftps.cwd
-        # check = ftps.path.exists('agileclass2/newFolder4')
 
         mock_createDirectory.return_value = 'agileclass2'
         mock_createDirectory.return_value = 'newFolder5'
@@ -145,7 +134,7 @@ class TestStringMethods(unittest.TestCase):
         ftp = app.connect(info)
 
         sys.stdout = sys.__stdout__
-        self.assertEqual(capturedOutput.getvalue(),'Connected to ' + info["host"])
+        self.assertEqual(capturedOutput.getvalue(),'Connected to ' + info["host"]+ '\n')
 
 
 if __name__ == '__main__':
