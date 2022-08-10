@@ -1,15 +1,17 @@
 from re import A
 import unittest
 from unittest.mock import patch
-import app
+# import app
 import io
 import sys
 import os
 from ftplib import FTP
+from app import *
 
 
 class TestStringMethods(unittest.TestCase):
 
+    '''
     def testConnection(self):
         info = {
             "host": '66.220.9.50',
@@ -130,9 +132,11 @@ class TestStringMethods(unittest.TestCase):
         mockDeleteFile.return_value = 'sampletext.txt'
 
         self.assertTrue(app.deleteDirectory, " ")
+    '''
 
     def test_ConnectionInfo_success(self):
-        info = app.saveInfo()
+        client = FTPClient()
+        info = client.saveInfo()
         self.assertEqual(info["host"], "66.220.9.50")
         self.assertEqual(info["user"], "agile_class")
         self.assertEqual(info["pw"], "password123!")
@@ -141,11 +145,12 @@ class TestStringMethods(unittest.TestCase):
         capturedOutput = io.StringIO()
         sys.stdout = capturedOutput
 
-        info = app.saveInfo()
-        ftp = app.connect(info)
+        client = FTPClient()
+        info = client.saveInfo()
+        ftp = client.connect(info)
 
         sys.stdout = sys.__stdout__
-        self.assertEqual(capturedOutput.getvalue(),'Connected to ' + info["host"])
+        self.assertEqual(capturedOutput.getvalue(),'Connected to ' + info["host"] + '\n')
 
 
 if __name__ == '__main__':
