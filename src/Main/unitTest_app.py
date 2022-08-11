@@ -10,7 +10,6 @@ from ftplib import FTP
 
 class TestStringMethods(unittest.TestCase):
 
-    '''
     def testConnection(self):
         info = {
             "host": '66.220.9.50',
@@ -132,7 +131,6 @@ class TestStringMethods(unittest.TestCase):
 
         self.assertTrue(app.deleteDirectory, " ")
 
-    '''
     def test_ConnectionInfo_success(self):
         info = app.saveInfo()
         self.assertEqual(info["host"], "66.220.9.50")
