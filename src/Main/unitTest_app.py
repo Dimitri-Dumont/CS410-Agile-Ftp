@@ -15,7 +15,7 @@ class TestStringMethods(unittest.TestCase):
                 "pw": 'password123!'
             }
     def testConnection(self):
-        
+
         capturedOutput = io.StringIO()
         sys.stdout = capturedOutput
         app.connect(self.info)
@@ -79,7 +79,7 @@ class TestStringMethods(unittest.TestCase):
         ftp = app.connect(self.info)
         try:
             app.remoteRename(ftp,"/","DONOTDELETE.txt","testRenamed.txt")
-               
+
         except:
             self.fail("Exception thrown"); # assert error not thrown
         app.remoteRename(ftp,"/","testRenamed.txt","DONOTDELETE.txt") # reset file name to original
@@ -130,12 +130,44 @@ class TestStringMethods(unittest.TestCase):
         capturedOutput = io.StringIO()
         sys.stdout = capturedOutput
 
-        info = app.saveInfo()
+        info = {
+            "host": '66.220.9.50',
+            "user": 'agile_class',
+            "pw": 'password123!'
+        }
         ftp = app.connect(info)
 
         sys.stdout = sys.__stdout__
-        self.assertEqual(capturedOutput.getvalue(),'Connected to ' + info["host"]+ '\n')
+        self.assertEqual(capturedOutput.getvalue(),'Connected to ' + info["host"] + '\n')
 
+    def test_uploadFile_success(self):
+        # Must have uploadFileTest.rtf in Main folder in order to test. See
+        # uploadFile() in app.py
+
+        info = {
+            "host": '66.220.9.50',
+            "user": 'agile_class',
+            "pw": 'password123!'
+        }
+        ftp = app.connect(info)
+        result = app.uploadFile(ftp, True)
+
+        self.assertTrue(result)
+
+    def test_uploadMultiple_success(self):
+        # Must have uploadMultiple1.rtf and uploadMultiple2.rtf in Main folder
+        # to test. See uploadMultiple() in app.py
+
+        info = {
+            "host": '66.220.9.50',
+            "user": 'agile_class',
+            "pw": 'password123!'
+        }
+
+        ftp = app.connect(info)
+        result = app.uploadMultiple(ftp, True)
+
+        self.assertTrue(result)
 
 if __name__ == '__main__':
     unittest.main()
